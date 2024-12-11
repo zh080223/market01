@@ -190,10 +190,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # 发邮件的配置
-# 授权码：fqnnofzvcfjmbgfc
+# 授权码：
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = '402306174@qq.com'
-EMAIL_HOST_PASSWORD = 'fqnnofzvcfjmbgfc'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_SSL = True
