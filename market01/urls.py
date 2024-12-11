@@ -22,5 +22,8 @@ from user.views import FileView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('user.urls')),
+    path('api/topic/', include('topic.urls')),
+    path('api/goods/', include('goods.urls')),
+    path('api/cart/', include('cart.urls')),
     re_path(r'file/image/(.+?)/', FileView.as_view()),
 ]

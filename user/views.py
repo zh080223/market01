@@ -10,12 +10,13 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from cart.models import Cart
+from common.verify_code import verify_code
 from market01.settings import MEDIA_ROOT
 from user.models import User, Address
 from user.permission import UserPermission, AddressPermission
 from user.serializers import UserSerializer, AddressSerializer
-from user.smtp_message import send_test_email
-from common.verify_code import verify_code
+from user.tasks import send_test_email_celery
 
 
 # Create your views here.
@@ -71,6 +72,11 @@ class RegisterView(APIView):
             return Response({'error': '邮箱格式不正确'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         # 8.创建用户
         obj = User.objects.create_user(username=username, email=email, password=password)
+        default_cart_data = {
+            'nums': 0,
+            'items': []
+        }
+        Cart.objects.create(user=obj, goods=default_cart_data)
         res = {
             'id': obj.id,
             'username': obj.username,
@@ -113,18 +119,15 @@ class FileView(APIView):
         return Response({'error': '文件不存在'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class AddressView(GenericViewSet,
-                  mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  mixins.DestroyModelMixin,
-                  mixins.UpdateModelMixin,
-                  ):
+class AddressView(GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin, ):
     """收货地址管理视图"""
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
     permission_classes = [IsAuthenticated, AddressPermission]
-    # 指定过滤字段
-    filterset_fields = ['user', ]
+
+    # # 指定过滤字段
+    # filterset_fields = ['user', ]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -149,11 +152,6 @@ class AddressView(GenericViewSet,
         return Response({'message': '设置成功'}, status=status.HTTP_200_OK)
 
 
-class SMTPSendClass:
-    def send_email(self, recipient, subject, message):
-        send_test_email(recipient, subject, message)
-
-
 class SendEmailView(APIView):
     def post(self, request, *args, **kwargs):
         curr_user = request.user
@@ -161,9 +159,9 @@ class SendEmailView(APIView):
         if not curr_recipient:
             return Response({'error': '当前用户无邮箱'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         subject = '测试邮件'
-        message = '邮件验证码为' + verify_code()
+        message = '【TestOfDjango】邮件验证码为' + verify_code()
         # 测试邮箱
-        view_instance = SMTPSendClass()
-        view_instance.send_email(curr_recipient, subject, message)
+        # send_test_email(curr_recipient, subject, message)
+        send_test_email_celery.delay(curr_recipient, subject, message)
         # 测试邮箱
-        return Response({'message': '邮件发送成功'}, status=status.HTTP_200_OK)
+        return Response({'message': '邮件发送成功，请查收'}, status=status.HTTP_200_OK)

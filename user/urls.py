@@ -30,6 +30,8 @@ urlpatterns = {
     path('token/verify/', TokenVerifyView.as_view()),
     # 获取单个用户信息
     path('<int:pk>/', views.UserView.as_view({'get': 'retrieve'})),
+    # # 查看个人信息
+    # path('<int:pk>/info/'),
     # 上传用户头像的接口
     path('<int:pk>/avatar/upload/', views.UserView.as_view({'post': 'upload_avatar'})),
     # 添加地址和获取地址列表路由

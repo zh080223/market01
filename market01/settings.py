@@ -45,19 +45,20 @@ INSTALLED_APPS = [
     'goods',
     'order',
     'cart',
+    'topic',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     # 自定义中间件
-    'middleware.mymiddleware.ExceptionMiddleware',
+    # 'middleware.send_error_email.ExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'market01.urls'
@@ -153,6 +154,9 @@ REST_FRAMEWORK = {
     ),
     # 过滤器
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    # 分页器
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 # token相关配置
