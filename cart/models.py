@@ -1,4 +1,6 @@
 from django.db import models
+from rest_framework import status
+from rest_framework.response import Response
 
 from user.models import User
 
@@ -12,7 +14,7 @@ class Cart(models.Model):
     Json数据结构
     {
         'nums': 3
-        'items': [
+        'goods': [
             {
                 'goods_id': 1,
                 'name': 'cola',
@@ -23,9 +25,12 @@ class Cart(models.Model):
     }
     Json数据结构
     '''
-    def add_goods(self, goods_id, name, price, quantity):
+
+    def add_goods(self, goods_id, name, price, quantity, is_status):
         # 检查商品是否已在购物车中
         found = False
+        if not is_status:
+            return -1
         for item in self.goods.get('items', []):
             if item['goods_id'] == goods_id:
                 item['quantity'] += quantity
@@ -54,6 +59,6 @@ class Cart(models.Model):
             if item.get('goods_id') == goods_id:
                 old_quantity = item['quantity']
                 item['quantity'] = quantity
-                item['total_price'] = item.get('total_price')/old_quantity * quantity
+                item['total_price'] = item.get('total_price') / old_quantity * quantity
                 break
         self.save()
