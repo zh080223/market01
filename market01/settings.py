@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -89,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'market01',
         'USER': 'root',
-        'PASSWORD': '803618',
+        'PASSWORD': 'xxxxxxxxx',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -130,6 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_ROOT = BASE_DIR / 'file/image'
 MEDIA_URL = 'file/image/'
@@ -190,10 +192,25 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # 发邮件的配置
-# 授权码：
+# 授权码：xxxxxxxxxxxxxxxxx
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = '402306174@qq.com'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'xxxxxxxxxxxxxxx'
 EMAIL_USE_SSL = True
+
+ALIPAY_KEY_DIRS = os.path.join(BASE_DIR, 'static/key_file/')
+ALIPAY_APPID = 'xxxxxxxxxxxxxxxxxxxxx'
+ALIPAY_RETURN_URL = 'http://127.0.0.1:8000/api/pay/result/'
+ALIPAY_NOTIFY_URL = 'http://127.0.0.1:8000/api/pay/result/'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://:xxxxxxxx@127.0.0.1:6379/0',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
